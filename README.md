@@ -5,15 +5,15 @@ The official Node.js SDK for [Usagey](https://usagey.com) - the complete toolkit
 ## Installation
 
 ```bash
-npm install usagey-node
+npm install usagey
 # or
-yarn add usagey-node
+yarn add usagey
 ```
 
 ## Quick Start
 
 ```typescript
-import { UsageyClient } from 'usagey-node';
+import { UsageyClient } from 'usagey';
 
 // Initialize the client with your API key
 const usagey = new UsageyClient('your_api_key');
@@ -45,10 +45,10 @@ async function trackApiCall() {
 ### Initialization
 
 ```typescript
-import { UsageyClient } from 'usagey-node';
+import { UsageyClient } from 'usagey';
 
 const usagey = new UsageyClient('your_api_key', {
-  baseUrl: 'https://usagey.com'
+  baseUrl: 'https://api.usagey.com'
 });
 ```
 
@@ -111,7 +111,7 @@ const events = await usagey.getUsageEvents({
 The SDK provides specific error classes for different types of errors:
 
 ```typescript
-import { UsageyClient, AuthenticationError, RateLimitError, ValidationError } from 'usagey-node';
+import { UsageyClient, AuthenticationError, RateLimitError, ValidationError } from 'usagey';
 
 const usagey = new UsageyClient('your_api_key');
 

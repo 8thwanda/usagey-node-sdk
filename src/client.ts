@@ -23,7 +23,7 @@ export class UsageyClient {
    * @param options Additional client options
    */
   constructor(apiKey: string, options: ClientOptions = {}) {
-    this.baseUrl = options.baseUrl || 'https://usagey.com';
+    this.baseUrl = options.baseUrl || 'https://api.usagey.com';
     this.httpClient = createHttpClient(apiKey, this.baseUrl);
   }
 
