@@ -4,7 +4,7 @@
 export interface ClientOptions {
   /**
    * Base URL for the Usagey API
-   * @default 'https://usagey.com'
+   * @default 'https://api.usagey.com'
    */
   baseUrl?: string;
 }

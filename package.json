@@ -1,5 +1,5 @@
 {
-  "name": "usagey-node",
+  "name": "usagey",
   "version": "0.1.0",
   "description": "Official Node.js SDK for Usagey - Usage-Based Pricing Toolkit",
   "main": "dist/index.js",

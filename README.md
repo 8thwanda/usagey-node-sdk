@@ -48,7 +48,7 @@ async function trackApiCall() {
 import { UsageyClient } from 'usagey-node';
 
 const usagey = new UsageyClient('your_api_key', {
-  baseUrl: 'https://usagey.com'
+  baseUrl: 'https://api.usagey.com'
 });
 ```
 

@@ -4,7 +4,7 @@ import { AuthenticationError, RateLimitError, ValidationError } from '../errors'
 
 describe('UsageyClient', () => {
   const API_KEY = 'test_api_key';
-  const BASE_URL = 'https://usagey.com';
+  const BASE_URL = 'https://api.usagey.com';
   let client: UsageyClient;
 
   beforeEach(() => {
