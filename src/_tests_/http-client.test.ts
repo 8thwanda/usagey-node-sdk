@@ -9,7 +9,7 @@ import {
 
 describe('HTTP Client', () => {
   const API_KEY = 'test_api_key';
-  const BASE_URL = 'https://usagey.com';
+  const BASE_URL = 'https://api.usagey.com';
   
   beforeEach(() => {
     nock.cleanAll();
@@ -50,7 +50,7 @@ describe('HTTP Client', () => {
   it('should throw AuthenticationError on 401', async () => {
     nock(BASE_URL)
       .get('/test')
-      .reply(401, { error: 'Invalid API key' });
+      .reply(401, { message: 'Invalid API key' });
 
     const client = createHttpClient(API_KEY, BASE_URL);
     
@@ -65,7 +65,7 @@ describe('HTTP Client', () => {
     nock(BASE_URL)
       .get('/test')
       .reply(429, { 
-        error: 'Rate limit exceeded',
+        message: 'Rate limit exceeded',
         retry_after: 60,
         limit: 100,
         remaining: 0
@@ -87,7 +87,7 @@ describe('HTTP Client', () => {
     nock(BASE_URL)
       .get('/test')
       .reply(422, { 
-        error: 'Validation failed',
+        message: 'Validation failed',
         details: {
           field1: ['Error 1', 'Error 2'],
           field2: ['Error 3']
@@ -103,7 +103,7 @@ describe('HTTP Client', () => {
   it('should throw UsageyError on other HTTP errors', async () => {
     nock(BASE_URL)
       .get('/test')
-      .reply(500, { error: 'Internal server error' });
+      .reply(500, { message: 'Internal server error' });
 
     const client = createHttpClient(API_KEY, BASE_URL);
     
