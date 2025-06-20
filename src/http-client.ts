@@ -32,9 +32,12 @@ export function createHttpClient(apiKey: string, baseUrl: string): AxiosInstance
       }
 
       const { status, data } = error.response;
-      const errorMessage = typeof data === 'object' && data !== null && 'error' in data
-        ? String(data.error)
-        : 'Unknown error';
+      const errorMessage =
+        typeof data === 'object' && data !== null
+          ? ((data as any).message as string) ||
+            ((data as any).error as string) ||
+            'Unknown error'
+          : 'Unknown error';
 
       // Map HTTP status codes to specific error types
       switch (status) {
