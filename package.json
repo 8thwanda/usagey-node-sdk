@@ -15,6 +15,10 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "npm run build"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "keywords": [
     "usagey",
     "usage-based-pricing",
@@ -40,6 +44,6 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20"
   }
 }
