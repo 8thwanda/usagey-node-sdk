@@ -12,7 +12,7 @@ export function createHttpClient(apiKey: string, baseUrl: string): AxiosInstance
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
-      'User-Agent': `UsageyNodeSDK/0.1.1 Node/${process.version}`
+      'User-Agent': `UsageyNodeSDK/0.1.2 Node/${process.version}`
     }
   });
 
