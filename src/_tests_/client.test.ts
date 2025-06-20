@@ -1,6 +1,6 @@
 import nock from 'nock';
 import { UsageyClient } from '../client';
-import { AuthenticationError, RateLimitError, ValidationError } from '../errors';
+import { AuthenticationError, RateLimitError, ValidationError as _ValidationError } from '../errors';
 
 describe('UsageyClient', () => {
   const API_KEY = 'test_api_key';
