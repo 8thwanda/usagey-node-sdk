@@ -1,4 +1,7 @@
 # Usagey Node.js SDK
+[![Test](https://github.com/8thwanda/usagey-node-sdk/actions/workflows/test.yml/badge.svg)](https://github.com/8thwanda/usagey-node-sdk/actions/workflows/test.yml)
+[![npm version](https://badge.fury.io/js/usagey.svg)](https://badge.fury.io/js/usagey)
+[![codecov](https://codecov.io/gh/8thwanda/usagey-node-sdk/branch/main/graph/badge.svg)](https://codecov.io/gh/8thwanda/usagey-node-sdk)
 
 The official Node.js SDK for [Usagey](https://usagey.com) - the complete toolkit for implementing usage-based pricing.
 
