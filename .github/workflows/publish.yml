@@ -15,17 +15,36 @@ jobs:
           always-auth: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      # Debug steps
+      - name: Debug - Check npm whoami
+        run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Debug - Check package info
+        run: |
+          echo "Package name from package.json:"
+          cat package.json | grep '"name"'
+          echo "Checking if package exists:"
+          npm view usagey || echo "Package not found via npm view"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
       - name: Install dependencies
         run: npm ci
       - name: Run tests
         run: npm test
       - name: Build
         run: npm run build
-      - name: Get previous published version
-        id: prev_version
-        run: echo "version=$(npm view usagey version)" >> $GITHUB_OUTPUT
-      - name: Show previous version
-        run: echo "Previous version was ${{ steps.prev_version.outputs.version }}"
+      
+      - name: Debug - Check built package
+        run: |
+          echo "Contents of package.json after build:"
+          cat package.json
+          echo "Package tarball contents:"
+          npm pack --dry-run
+        
       - name: Publish to npm
         run: npm publish --access public
         env:
