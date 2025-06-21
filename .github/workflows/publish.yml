@@ -12,25 +12,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
       
-      - name: Configure npm authentication
+      - name: Create .npmrc file
         run: |
-          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
-      - name: Debug - Verify authentication
-        run: |
-          echo "Checking npm authentication:"
-          npm whoami
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          echo "//registry.npmjs.org/:_authToken=\${NPM_AUTH_TOKEN}" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
       
       - name: Install dependencies
         run: npm ci
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       
       - name: Run tests
         run: npm test
@@ -48,7 +39,7 @@ jobs:
           PUBLISHED_VERSION=$(npm view usagey version 2>/dev/null || echo "0.0.0")
           echo "version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       
       - name: Compare versions
         id: version_check
@@ -70,4 +61,4 @@ jobs:
         if: steps.version_check.outputs.should_publish == 'true'
         run: npm publish --access public
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
