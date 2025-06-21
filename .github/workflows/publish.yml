@@ -1,51 +1,68 @@
 name: Publish
 on:
-  release:
-    types: [created]
+  push:
+    branches: [main]
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js and npm auth
+      
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org/'
-          always-auth: true
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      # Debug steps
-      - name: Debug - Check npm whoami
-        run: npm whoami
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
-      - name: Debug - Check package info
+      - name: Setup .npmrc with authentication
         run: |
-          echo "Package name from package.json:"
-          cat package.json | grep '"name"'
-          echo "Checking if package exists:"
-          npm view usagey || echo "Package not found via npm view"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          cat << EOF > ~/.npmrc
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          registry=https://registry.npmjs.org/
+          always-auth=true
+          EOF
+      
+      - name: Debug - Verify authentication
+        run: |
+          echo "Checking npm authentication:"
+          npm whoami
+          echo "Checking package ownership:"
+          npm owner ls usagey
       
       - name: Install dependencies
         run: npm ci
+      
       - name: Run tests
         run: npm test
+      
       - name: Build
         run: npm run build
       
-      - name: Debug - Check built package
+      - name: Get current package version
+        id: current_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      
+      - name: Get published version
+        id: published_version
         run: |
-          echo "Contents of package.json after build:"
-          cat package.json
-          echo "Package tarball contents:"
-          npm pack --dry-run
-        
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISHED_VERSION=$(npm view usagey version 2>/dev/null || echo "0.0.0")
+          echo "version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Compare versions
+        id: version_check
+        run: |
+          CURRENT="${{ steps.current_version.outputs.version }}"
+          PUBLISHED="${{ steps.published_version.outputs.version }}"
+          echo "Current version: $CURRENT"
+          echo "Published version: $PUBLISHED"
+          
+          if [ "$CURRENT" != "$PUBLISHED" ]; then
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+            echo "New version detected - will publish"
+          else
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            echo "No version change - skipping publish"
+          fi
+      
+      - name: Publish to npm with explicit registry
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: npm publish --registry https://registry.npmjs.org/ --access public
