@@ -1,63 +1,35 @@
 name: Publish
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'package.json'
+  release:
+    types: [published]
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      - name: Check if version changed
-        id: version_changed
-        run: |
-          # Check if this commit changed the version in package.json
-          if git diff HEAD~1 HEAD --name-only | grep -q "package.json"; then
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
-            git checkout HEAD~1 -- package.json 2>/dev/null || echo "No previous version"
-            PREVIOUS_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-            git checkout HEAD -- package.json
-            
-            echo "Current: $CURRENT_VERSION, Previous: $PREVIOUS_VERSION"
-            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-              echo "version_bumped=true" >> $GITHUB_OUTPUT
-            else
-              echo "version_bumped=false" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "version_bumped=false" >> $GITHUB_OUTPUT
-          fi
-      
       - name: Setup Node.js
-        if: steps.version_changed.outputs.version_bumped == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
       
       - name: Create .npmrc file
-        if: steps.version_changed.outputs.version_bumped == 'true'
         run: |
           echo "//registry.npmjs.org/:_authToken=\${NPM_AUTH_TOKEN}" > .npmrc
           echo "registry=https://registry.npmjs.org/" >> .npmrc
       
       - name: Install dependencies
-        if: steps.version_changed.outputs.version_bumped == 'true'
         run: npm ci
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       
       - name: Run tests
-        if: steps.version_changed.outputs.version_bumped == 'true'
         run: npm test
       
       - name: Build
-        if: steps.version_changed.outputs.version_bumped == 'true'
         run: npm run build
       
       - name: Publish to npm
-        if: steps.version_changed.outputs.version_bumped == 'true'
         run: npm publish --access public
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
