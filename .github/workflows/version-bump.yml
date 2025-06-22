@@ -13,29 +13,46 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-latest
-    permissions:         
+    permissions:        
       contents: write    
       pull-requests: write
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }} 
-    
+        token: ${{ secrets.GITHUB_TOKEN }}
+   
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-    
+   
     - name: Configure Git
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-    
+   
     - name: Bump version
       run: npm version ${{ github.event.inputs.bump_type }} -m "Bump version to %s"
-    
+   
+    - name: Get new version
+      id: get_version
+      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+   
     - name: Push changes
       run: |
         git push
         git push --tags
+    
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.version }}
+        release_name: Release v${{ steps.get_version.outputs.version }}
+        body: |
+          Changes in this Release
+          - Auto-generated release for version ${{ steps.get_version.outputs.version }}
+        draft: false
+        prerelease: false
