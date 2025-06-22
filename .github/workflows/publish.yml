@@ -1,12 +1,20 @@
 name: Publish
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Show version being published
+        run: echo "Publishing version ${{ steps.get_version.outputs.version }} to npm"
       
       - name: Setup Node.js
         uses: actions/setup-node@v4

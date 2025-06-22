@@ -35,24 +35,7 @@ jobs:
     - name: Bump version
       run: npm version ${{ github.event.inputs.bump_type }} -m "Bump version to %s"
    
-    - name: Get new version
-      id: get_version
-      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-   
-    - name: Push changes
+    - name: Push changes and tags
       run: |
         git push
         git push --tags
-    
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ steps.get_version.outputs.version }}
-        release_name: Release v${{ steps.get_version.outputs.version }}
-        body: |
-          Changes in this Release
-          - Auto-generated release for version ${{ steps.get_version.outputs.version }}
-        draft: false
-        prerelease: false
